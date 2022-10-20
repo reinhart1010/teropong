@@ -13,15 +13,17 @@ class MainWindowInAdwaita extends StatefulWidget {
 class MainWindowStateInAdwaita extends State with WidgetsBindingObserver {
   FlapController flapController = FlapController();
   bool useTabs = false;
-  bool? _isPreviouslyMobile;
 
   bool isMobile(BuildContext context) =>
       MediaQuery.of(context).size.width < 600;
+  bool isSuperMobile(BuildContext context) =>
+      MediaQuery.of(context).size.width < 00;
 
   @override
   Widget build(BuildContext context) {
     MainWindowState commonState = MainWindow.of(context)!;
     bool isMobile = this.isMobile(context);
+    bool isSuperMobile = this.isSuperMobile(context);
     List<AdwSidebarItem> sidebarItems = [];
     List<ViewSwitcherData> tabs = [];
 
