@@ -1,8 +1,0 @@
-version: "Apple Swift version 5.7 (swiftlang-5.7.0.127.4 clang-1400.0.29.50)"
-options: "3cfb83998010bd5a58f59d37b5658790a5203020aa0e15e709d293ff61829cb2"
-build_start_time: [1666242506, 63138008]
-build_end_time: [1666242506, 162983894]
-inputs:
-  "/Users/shift/Projects/teropong/macos/Flutter/GeneratedPluginRegistrant.swift": !private [1666242473, 293134212]
-  "/Users/shift/Projects/teropong/macos/Runner/AppDelegate.swift": !private [1666234779, 399713993]
-  "/Users/shift/Projects/teropong/macos/Runner/MainFlutterWindow.swift": !private [1666234779, 403499841]
