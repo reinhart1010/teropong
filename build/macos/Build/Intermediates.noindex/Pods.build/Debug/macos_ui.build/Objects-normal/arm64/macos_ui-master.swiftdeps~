@@ -1,0 +1,8 @@
+version: "Apple Swift version 5.7 (swiftlang-5.7.0.127.4 clang-1400.0.29.50)"
+options: "cd617f4fd57a5a4be6ada612c43e12efafaed934abff794097d97b60e38943b8"
+build_start_time: [1666242489, 144729137]
+build_end_time: [1666242489, 177404880]
+inputs:
+  ? "/opt/homebrew/Caskroom/flutter/3.0.5/flutter/.pub-cache/hosted/pub.dartlang.org/macos_ui-1.7.5/macos/Classes/ColorPanelProvider.swift"
+  : !private [1666239286, 562400341]
+  "/opt/homebrew/Caskroom/flutter/3.0.5/flutter/.pub-cache/hosted/pub.dartlang.org/macos_ui-1.7.5/macos/Classes/MacosUiPlugin.swift": !private [1666239286, 562253236]

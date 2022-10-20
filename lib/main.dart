@@ -4,19 +4,27 @@ import 'package:fluent_ui/fluent_ui.dart' as fluent;
 import 'package:flutter/cupertino.dart' as ios;
 import 'package:flutter/material.dart' as material;
 import 'package:flutter/widgets.dart';
+import 'package:libadwaita_bitsdojo/libadwaita_bitsdojo.dart';
 import 'package:macos_ui/macos_ui.dart' as macos;
 import 'package:teropong/entities/ui_theme.dart';
 import 'package:teropong/layouts/main_window.dart';
 
 void main(List<String> args) {
   UITheme uiTheme = UITheme.adwaita;
-  if (args.isNotEmpty && UITheme.values.map((e) => e.toString()).contains(args[0].toLowerCase())) {
+  if (args.isNotEmpty &&
+      UITheme.values.map((e) => e.toString()).contains(args[0].toLowerCase())) {
     uiTheme = EnumToString.fromString(UITheme.values, args[0].toLowerCase())!;
   }
   runApp(BaseApp(
     home: MainWindow(),
     uiTheme: uiTheme,
   ));
+  doWhenWindowReady(() {
+    const initialSize = Size(400, 400);
+    appWindow!.minSize = initialSize;
+    appWindow!.alignment = Alignment.center;
+    appWindow!.show();
+  });
 }
 
 class BaseApp extends StatefulWidget {

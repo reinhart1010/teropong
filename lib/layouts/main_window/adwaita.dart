@@ -1,6 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:libadwaita_core/libadwaita_core.dart';
+import 'package:libadwaita_bitsdojo/libadwaita_bitsdojo.dart';
 import 'package:libadwaita/libadwaita.dart';
+import 'package:teropong/entities/top_level_menu.dart';
 import 'package:teropong/layouts/main_window.dart';
 
 class MainWindowInAdwaita extends StatefulWidget {
@@ -8,30 +10,97 @@ class MainWindowInAdwaita extends StatefulWidget {
   State createState() => MainWindowStateInAdwaita();
 }
 
-class MainWindowStateInAdwaita extends MainWindowState {
+class MainWindowStateInAdwaita extends State with WidgetsBindingObserver {
   FlapController flapController = FlapController();
   bool useTabs = false;
+  bool? _isPreviouslyMobile;
+
+  bool isMobile(BuildContext context) =>
+      MediaQuery.of(context).size.width < 600;
 
   @override
   Widget build(BuildContext context) {
+    MainWindowState commonState = MainWindow.of(context)!;
+    bool isMobile = this.isMobile(context);
+    List<AdwSidebarItem> sidebarItems = [];
+    List<ViewSwitcherData> tabs = [];
+
+    for (var el in commonState.mainNavigation) {
+      sidebarItems.add(AdwSidebarItem(
+          labelWidget: Row(
+        children: [
+          Icon(el.materialIcon, size: 16),
+          const SizedBox(width: 8),
+          Text(el.getName()),
+        ],
+      )));
+      tabs.add(ViewSwitcherData(icon: el.materialIcon, title: el.getName()));
+    }
+
     return AdwScaffold(
-      actions: AdwActions(),
-      body: AdwButton.circular(
-        child: Text("Ugh Schaloob"),
-        onPressed: () {
-          flapController.toggle();
-        },
+      actions: AdwActions().bitsdojo,
+      body: AdwViewStack(
+        children: [
+          AdwClamp.scrollable(
+            child: AdwPreferencesGroup(
+              children: [
+                AdwSwitchRow(
+                  title: 'Locked',
+                  subtitle: """
+Sidebar visibility doesn't change when fold state changes""",
+                  value: false,
+                  onChanged: (val) {
+                    // locked = val;
+                    setState(() {});
+                  },
+                )
+              ],
+            ),
+          ),
+        ],
       ),
-      flapController: flapController,
-      flap: (bool isOpened) => AdwSidebar.builder(
-        currentIndex: 0,
-        itemCount: 1,
-        itemBuilder: (BuildContext context, int index, bool isSelected) {
-          return AdwSidebarItem(label: "Sidebar item");
-        },
-        onSelected: (int index) {},
-      ),
-      title: Text("Teropong"),
+      end: [
+        AdwHeaderButton(
+          icon: const Icon(Icons.notifications),
+          onPressed: () {},
+        )
+      ],
+      flap: !isMobile
+          ? (bool isOpened) {
+              return AdwSidebar(
+                currentIndex: commonState.mainNavigationCurrentIndex,
+                isDrawer: false,
+                onSelected: (int index) {
+                  commonState.mainNavigationCurrentIndex = index;
+                  setState(() {});
+                },
+                children: sidebarItems,
+              );
+            }
+          : null,
+      start: [
+        AdwHeaderButton(
+          icon: const Icon(Icons.search),
+          onPressed: () {},
+        )
+      ],
+      title: const Text("Teropong"),
+      viewSwitcher: isMobile
+          ? AdwViewSwitcher(
+              currentIndex: commonState.mainNavigationCurrentIndex,
+              onViewChanged: (int index) {
+                commonState.mainNavigationCurrentIndex = index;
+                setState(() {});
+              },
+              tabs: tabs,
+            )
+          : null,
     );
+  }
+
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    setState(() {});
   }
 }
