@@ -11,7 +11,7 @@ import 'package:teropong/layouts/main_window.dart';
 void main(List<String> args) {
   UITheme uiTheme = UITheme.adwaita;
   if (args.isNotEmpty && UITheme.values.map((e) => e.toString()).contains(args[0].toLowerCase())) {
-    uiTheme = EnumToString.fromString(UITheme.values, args[0].toLowerCase());
+    uiTheme = EnumToString.fromString(UITheme.values, args[0].toLowerCase())!;
   }
   runApp(BaseApp(
     home: MainWindow(),
