@@ -10,7 +10,7 @@ void main(List<String> args) {
   runApp(const BaseApp());
   if (!kIsWeb && !Platform.isAndroid && !Platform.isIOS) {
     doWhenWindowReady(() {
-      appWindow.minSize = const Size(300, 400);
+      appWindow.minSize = const Size(400, 400);
       appWindow.alignment = Alignment.center;
       appWindow.show();
     });

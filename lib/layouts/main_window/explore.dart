@@ -1,4 +1,3 @@
-import 'package:basic_utils/basic_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:teropong/entities/account.dart';
 import 'package:teropong/entities/instance.dart';
@@ -15,6 +14,8 @@ class ExplorePage extends StatefulWidget {
 
 class ExploreState extends State {
   List<Post> recommendedPosts = [];
+  ScrollController scrollController = ScrollController();
+  bool _isNotAtTop = false;
 
   Future<void> _fetchPosts() async {
     Instance? instance = await Instance.of(Uri.parse("https://botsin.space"),
@@ -35,6 +36,7 @@ class ExploreState extends State {
         title: Text("🔭 go explore the fediverse!"),
       ),
       body: SingleChildScrollView(
+          controller: scrollController,
           padding: EdgeInsetsDirectional.fromSTEB(
               mainWindow.useSidebar ? 0 : 12, 12, 12, 12),
           child: Center(

@@ -50,8 +50,10 @@ static void my_application_activate(GApplication* application) {
 
   auto bdw = bitsdojo_window_from(window);
   bdw->setCustomFrame(true);
-  //gtk_window_set_default_size(window, 1280, 720); 
+  //gtk_window_set_default_size(window, 1280, 720);
   gtk_widget_show(GTK_WIDGET(window));
+  auto gdk_window = gtk_widget_get_window(GTK_WIDGET(window));
+  gdk_window_set_decorations(gdk_window, GdkWMDecoration::GDK_DECOR_BORDER);
 
   g_autoptr(FlDartProject) project = fl_dart_project_new();
   fl_dart_project_set_dart_entrypoint_arguments(project, self->dart_entrypoint_arguments);

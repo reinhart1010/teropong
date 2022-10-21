@@ -33,6 +33,7 @@ class MainWindowState extends State
   bool topNavigationExtended = false,
       useExtendedSidebar = false,
       useSidebar = false;
+  Color windowTitleBarColor = Colors.transparent;
 
   List<NavigationDestination> topNavigationDestinations = [
     NavigationDestination(
@@ -65,42 +66,77 @@ class MainWindowState extends State
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
-    return Scaffold(
-      body: WindowBorder(
-        color: Colors.transparent,
-        child: Column(
-          children: [
-            WindowTitleBarBox(
-              child: MoveWindow(
-                child: Center(child: Text("teropong")),
-              ),
-            ),
-            Expanded(
-              child: Row(
-                children: [
-                  if (useSidebar)
-                    NavigationRail(
-                      destinations: topNavigationDestinations
-                          .map((el) => el.toNavigationRailDestination())
-                          .toList(),
-                      extended: useExtendedSidebar,
-                      labelType: useExtendedSidebar
-                          ? NavigationRailLabelType.none
-                          : NavigationRailLabelType.all,
-                      onDestinationSelected: (value) {
-                        topNavigationCurrentIndex = value;
-                        setState(() {});
-                      },
-                      selectedIndex: topNavigationCurrentIndex,
-                    ),
-                  Expanded(
-                    child: ExplorePage(),
-                  ),
-                ],
-              ),
-            ),
-          ],
+    WindowButtonColors baseWindowButtonColor = WindowButtonColors(
+          iconNormal: theme.colorScheme.primary,
+          iconMouseDown: theme.colorScheme.onPrimary,
+          iconMouseOver: theme.colorScheme.onPrimaryContainer,
+          mouseDown: theme.colorScheme.primary,
+          mouseOver: theme.colorScheme.primaryContainer,
         ),
+        closeWindowButtonColor = WindowButtonColors(
+          iconNormal: theme.colorScheme.primary,
+          iconMouseDown: theme.colorScheme.onError,
+          iconMouseOver: theme.colorScheme.onErrorContainer,
+          mouseDown: theme.colorScheme.error,
+          mouseOver: theme.colorScheme.errorContainer,
+        );
+    return Scaffold(
+      body: Column(
+        children: [
+          WindowTitleBarBox(
+            child: ColoredBox(
+              color: windowTitleBarColor,
+              child: MoveWindow(
+                child: Stack(
+                  children: [
+                    const Center(child: Text("teropong")),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        MinimizeWindowButton(
+                          animate: true,
+                          colors: baseWindowButtonColor,
+                        ),
+                        MaximizeWindowButton(
+                          animate: true,
+                          colors: baseWindowButtonColor,
+                        ),
+                        CloseWindowButton(
+                          animate: true,
+                          colors: closeWindowButtonColor,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: Row(
+              children: [
+                if (useSidebar)
+                  NavigationRail(
+                    destinations: topNavigationDestinations
+                        .map((el) => el.toNavigationRailDestination())
+                        .toList(),
+                    extended: useExtendedSidebar,
+                    labelType: useExtendedSidebar
+                        ? NavigationRailLabelType.none
+                        : NavigationRailLabelType.all,
+                    onDestinationSelected: (value) {
+                      topNavigationCurrentIndex = value;
+                      setState(() {});
+                    },
+                    selectedIndex: topNavigationCurrentIndex,
+                  ),
+                Expanded(
+                  child: ExplorePage(),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: useSidebar
           ? null
@@ -113,6 +149,10 @@ class MainWindowState extends State
               selectedIndex: topNavigationCurrentIndex,
             ),
     );
+  }
+
+  void clearWindowTitleBarColor() {
+    setWindowTitleBarColor(Colors.transparent);
   }
 
   @override
@@ -134,5 +174,10 @@ class MainWindowState extends State
     super.initState();
     exploreTabController = TabController(length: 3, vsync: this);
     WidgetsBinding.instance.addObserver(this);
+  }
+
+  void setWindowTitleBarColor(Color newColor) {
+    windowTitleBarColor = newColor;
+    setState(() {});
   }
 }
