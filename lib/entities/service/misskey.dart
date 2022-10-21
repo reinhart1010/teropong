@@ -56,10 +56,12 @@ class MisskeyService implements Service {
       }
     }
     Dio dio = Dio();
-    Response res = await dio.get(account.instance.instanceUrl
+    Response res = await dio.post(account.instance.instanceUrl
         .resolve("/api/notes/$scope-timeline")
         .toString());
-    List<Map<String, dynamic>> originalPosts = res.data;
+    List<Map<String, dynamic>> originalPosts = (res.data as List<dynamic>)
+        .map((el) => el as Map<String, dynamic>)
+        .toList();
     List<Post> posts = [];
     for (var el in originalPosts) {
       Post? parsed = Post.fromMisskey(el);

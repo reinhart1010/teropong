@@ -9,7 +9,7 @@ class Account {
 
   Account(
     this.instance, {
-    this.credentialType = AccountCredentialType.basic,
+    this.credentialType = AccountCredentialType.anonymous,
     this.password,
     this.token,
     this.username,

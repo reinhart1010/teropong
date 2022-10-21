@@ -2,6 +2,7 @@ import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:teropong/layouts/main_window/explore.dart';
 
 class MainWindow extends StatefulWidget {
   const MainWindow({
@@ -61,33 +62,6 @@ class MainWindowState extends State
     ),
   ];
 
-  Widget _buildExplorePage(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: false,
-        title: Text("🔭 go explore the fediverse!"),
-      ),
-      body: SingleChildScrollView(
-          padding:
-              EdgeInsetsDirectional.fromSTEB(useSidebar ? 0 : 12, 12, 12, 12),
-          child: Center(
-            child: Container(
-              constraints: BoxConstraints(maxWidth: 512),
-              child: Column(
-                children: [
-                  Card(
-                    child: ListTile(
-                      title: Text("asas"),
-                      subtitle: Text("asas"),
-                    ),
-                  )
-                ],
-              ),
-            ),
-          )),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
@@ -120,7 +94,7 @@ class MainWindowState extends State
                       selectedIndex: topNavigationCurrentIndex,
                     ),
                   Expanded(
-                    child: _buildExplorePage(context),
+                    child: ExplorePage(),
                   ),
                 ],
               ),

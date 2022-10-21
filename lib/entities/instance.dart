@@ -103,13 +103,13 @@ class InstanceStats {
       Map<String, dynamic> parsedData = data as Map<String, dynamic>;
       InstanceStats res = InstanceStats();
       if (parsedData.containsKey("domain_count")) {
-        res.peers = BigInt.tryParse(parsedData["domain_count"]);
+        res.peers = BigInt.tryParse(parsedData["domain_count"].toString());
       }
       if (parsedData.containsKey("status_count")) {
-        res.posts = BigInt.tryParse(parsedData["status_count"]);
+        res.posts = BigInt.tryParse(parsedData["status_count"].toString());
       }
       if (parsedData.containsKey("user_count")) {
-        res.users = BigInt.tryParse(parsedData["user_count"]);
+        res.users = BigInt.tryParse(parsedData["user_count"].toString());
       }
       return (res.peers == null && res.posts == null && res.users == null)
           ? null
@@ -127,13 +127,15 @@ class InstanceStats {
       Map<String, dynamic> serverInfo = res.data as Map<String, dynamic>;
       InstanceStats stats = InstanceStats();
       if (serverInfo.containsKey("instances")) {
-        stats.peers = BigInt.tryParse(serverInfo["instances"]);
+        stats.peers = BigInt.tryParse(serverInfo["instances"].toString());
       }
       if (serverInfo.containsKey("originalNotesCount")) {
-        stats.posts = BigInt.tryParse(serverInfo["originalNotesCount"]);
+        stats.posts =
+            BigInt.tryParse(serverInfo["originalNotesCount"].toString());
       }
       if (serverInfo.containsKey("originalUsersCount")) {
-        stats.users = BigInt.tryParse(serverInfo["originalUsersCount"]);
+        stats.users =
+            BigInt.tryParse(serverInfo["originalUsersCount"].toString());
       }
       return (stats.peers == null && stats.posts == null && stats.users == null)
           ? null

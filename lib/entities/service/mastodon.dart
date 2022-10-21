@@ -51,7 +51,9 @@ class MastodonService implements Service {
         .resolve(
             "/api/v1/timelines/$scope?local=${withLocal && !withRemote}&remote=${!withLocal && withRemote}")
         .toString());
-    List<Map<String, dynamic>> originalPosts = res.data;
+    List<Map<String, dynamic>> originalPosts = (res.data as List<dynamic>)
+        .map((el) => el as Map<String, dynamic>)
+        .toList();
     List<Post> posts = [];
     for (var el in originalPosts) {
       Post? parsed = Post.fromMastodon(el);
