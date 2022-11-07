@@ -54,94 +54,15 @@ class InstanceRegistrationPolicy {
     this.requiresInviteCode = false,
   });
 
-  static InstanceRegistrationPolicy? fromMastodon(dynamic data) {
-    try {
-      Map<String, dynamic> parsedData = data as Map<String, dynamic>;
-      InstanceRegistrationPolicy res = InstanceRegistrationPolicy();
-      if (parsedData.containsKey("registrations")) {
-        res.openForSignups = parsedData["registrations"] == true;
-      }
-      if (parsedData.containsKey("approval_required")) {
-        res.requiresApproval = parsedData["approval_required"] == true;
-      }
-      return res;
-    } catch (_) {
-      return null;
-    }
-  }
-
-  static InstanceRegistrationPolicy? fromMisskey(dynamic data) {
-    try {
-      Map<String, dynamic> parsedData = data as Map<String, dynamic>;
-      InstanceRegistrationPolicy res = InstanceRegistrationPolicy();
-      // If the server is closed for registration, Misskey still requires a dedicated invite code
-      res.openForSignups = true;
-      res.requiresInviteCode = !parsedData.containsKey("disableRegistration") ||
-          parsedData["disableRegistration"] == false;
-      if (parsedData.containsKey("emailRequiredForSignup")) {
-        res.requiresEmail = parsedData["emailRequiredForSignup"] == true;
-      }
-      if ((parsedData.containsKey("enableHcaptcha") &&
-              parsedData["enableHcaptcha"] == true) ||
-          (parsedData.containsKey("enableRecaptcha") &&
-              parsedData["enableRecaptcha"] == true)) {
-        res.requiresCaptcha = true;
-      }
-      return res;
-    } catch (_) {
-      return null;
-    }
-  }
+  static Future<InstanceRegistrationPolicy?> from(
+          dynamic serverData, Instance instance) async =>
+      instance.service != null
+          ? (await instance.service!.parseUtils
+              .parseInstanceRegistrationPolicy(serverData))
+          : null;
 }
 
 class InstanceStats {
   BigInt? peers, posts, users;
   InstanceStats({this.peers, this.posts, this.users});
-
-  static InstanceStats? fromMastodon(dynamic data) {
-    try {
-      Map<String, dynamic> parsedData = data as Map<String, dynamic>;
-      InstanceStats res = InstanceStats();
-      if (parsedData.containsKey("domain_count")) {
-        res.peers = BigInt.tryParse(parsedData["domain_count"].toString());
-      }
-      if (parsedData.containsKey("status_count")) {
-        res.posts = BigInt.tryParse(parsedData["status_count"].toString());
-      }
-      if (parsedData.containsKey("user_count")) {
-        res.users = BigInt.tryParse(parsedData["user_count"].toString());
-      }
-      return (res.peers == null && res.posts == null && res.users == null)
-          ? null
-          : res;
-    } catch (_) {
-      return null;
-    }
-  }
-
-  static Future<InstanceStats?> fromMisskey(Uri instanceUrl) async {
-    Dio dio = Dio();
-    try {
-      Response res =
-          await dio.post(instanceUrl.resolve("/api/stats").toString());
-      Map<String, dynamic> serverInfo = res.data as Map<String, dynamic>;
-      InstanceStats stats = InstanceStats();
-      if (serverInfo.containsKey("instances")) {
-        stats.peers = BigInt.tryParse(serverInfo["instances"].toString());
-      }
-      if (serverInfo.containsKey("originalNotesCount")) {
-        stats.posts =
-            BigInt.tryParse(serverInfo["originalNotesCount"].toString());
-      }
-      if (serverInfo.containsKey("originalUsersCount")) {
-        stats.users =
-            BigInt.tryParse(serverInfo["originalUsersCount"].toString());
-      }
-      return (stats.peers == null && stats.posts == null && stats.users == null)
-          ? null
-          : stats;
-    } on DioError catch (_) {
-      return null;
-    }
-  }
 }

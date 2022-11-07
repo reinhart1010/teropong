@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:teropong/entities/account.dart';
 import 'package:teropong/entities/post.dart';
+import 'package:teropong/utils/parse_utils.dart';
+import 'package:teropong/utils/parse_utils/mastodon.dart';
 
 import '../activitypub.dart';
 import '../instance.dart';
@@ -10,6 +12,8 @@ class MastodonService implements Service {
   @override
   Set<ActivityType> commonPostTypes = {ActivityType.note};
   @override
+  Instance? currentInstance;
+  @override
   String description = "",
       name = "Mastodon",
       projectUrl = "https://joinmastodon.org";
@@ -17,6 +21,12 @@ class MastodonService implements Service {
   List<String> instanceListRecommendationUrl = [
     "https://joinmastodon.org/servers"
   ];
+  @override
+  late ParseUtils parseUtils;
+
+  MastodonService() {
+    parseUtils = MastodonParseUtils(this);
+  }
 
   @override
   Future<Instance?> getInstance(Uri instanceUrl) async {
@@ -25,13 +35,16 @@ class MastodonService implements Service {
       Response res =
           await dio.get(instanceUrl.resolve("/api/v1/instance").toString());
       Map<String, dynamic> serverInfo = res.data as Map<String, dynamic>;
-      return Instance(
+      Instance instance = Instance(
         instanceUrl,
         this,
-        registrationPolicy: InstanceRegistrationPolicy.fromMastodon(serverInfo),
-        stats: InstanceStats.fromMastodon(serverInfo["stats"]),
+        registrationPolicy:
+            await parseUtils.parseInstanceRegistrationPolicy(serverInfo),
+        stats: await parseUtils.parseInstanceStats(serverInfo["stats"]),
         title: serverInfo["title"],
       );
+      currentInstance = instance;
+      return instance;
     } on DioError catch (_) {
       return null;
     }
@@ -40,6 +53,9 @@ class MastodonService implements Service {
   @override
   Future<List<Post>> getTimelinePosts(
     Account account, {
+    String? sinceId,
+    String? untilId,
+    bool onlyMedia = false,
     bool withLocal = true,
     bool withRemote = true,
   }) async {
@@ -47,16 +63,25 @@ class MastodonService implements Service {
         ? "public"
         : "home";
     Dio dio = Dio();
-    Response res = await dio.get(account.instance.instanceUrl
-        .resolve(
-            "/api/v1/timelines/$scope?local=${withLocal && !withRemote}&remote=${!withLocal && withRemote}")
-        .toString());
+    String requestPath =
+        "/api/v1/timelines/$scope?local=${withLocal && !withRemote}&remote=${!withLocal && withRemote}";
+    if (sinceId != null && sinceId.isNotEmpty) {
+      requestPath += "&min_id=${Uri.encodeFull(sinceId)}";
+    }
+    if (untilId != null && untilId.isNotEmpty) {
+      requestPath += "&max_id=${Uri.encodeFull(untilId)}";
+    }
+    if (onlyMedia) {
+      requestPath += "&only_media=$onlyMedia";
+    }
+    Response res = await dio
+        .get(account.instance.instanceUrl.resolve(requestPath).toString());
     List<Map<String, dynamic>> originalPosts = (res.data as List<dynamic>)
         .map((el) => el as Map<String, dynamic>)
         .toList();
     List<Post> posts = [];
     for (var el in originalPosts) {
-      Post? parsed = Post.fromMastodon(el);
+      Post? parsed = await parseUtils.parsePost(el);
       if (parsed != null) {
         posts.add(parsed);
       }

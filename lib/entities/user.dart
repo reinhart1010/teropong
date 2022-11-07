@@ -3,8 +3,8 @@ import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 
 class User {
+  String? avatarBlurHash, bio, coverBlurHash, displayName;
   Uri? avatarUrl, coverUrl, staticAvatarUrl, staticCoverUrl, url;
-  String? bio, displayName;
   DateTime? createdAt;
   BigInt? followerCount, followingCount, postCount;
   String host, username;
@@ -13,9 +13,11 @@ class User {
   UserOnlineStatus onlineStatus;
 
   User({
+    this.avatarBlurHash,
     this.avatarUrl,
     this.bio,
     this.createdAt,
+    this.coverBlurHash,
     this.coverUrl,
     this.displayName,
     this.followerCount,
@@ -159,90 +161,6 @@ class User {
         host: profileUrl.host,
         username: profileUrl.pathSegments.last.replaceFirst("@", ""),
       );
-    } catch (e) {
-      return null;
-    }
-  }
-
-  static User? fromMastodon(dynamic data) {
-    try {
-      Map<String, dynamic> userInfo = data as Map<String, dynamic>;
-      User res = User.fromProfileUrl(Uri.parse(userInfo["url"]))!;
-      if (userInfo.containsKey("display_name")) {
-        res.displayName = userInfo["display_name"];
-      }
-      if (userInfo.containsKey("note")) {
-        res.bio = userInfo["note"];
-      }
-      if (userInfo.containsKey("created_at")) {
-        res.createdAt = DateTime.tryParse(userInfo["created_at"]);
-      }
-      if (userInfo.containsKey("avatar")) {
-        res.avatarUrl = Uri.tryParse(userInfo["avatar"]);
-      }
-      if (userInfo.containsKey("avatar_static")) {
-        res.staticAvatarUrl = Uri.tryParse(userInfo["avatar_static"]);
-      }
-      if (userInfo.containsKey("header")) {
-        res.coverUrl = Uri.tryParse(userInfo["header"]);
-      }
-      if (userInfo.containsKey("header_static")) {
-        res.staticCoverUrl = Uri.tryParse(userInfo["header_static"]);
-      }
-      if (userInfo.containsKey("locked")) {
-        res.isLocked = userInfo["locked"] == true;
-      }
-      if (userInfo.containsKey("bot")) {
-        res.isBot = userInfo["bot"] == true;
-      }
-      if (userInfo.containsKey("followers_count")) {
-        res.followerCount =
-            BigInt.tryParse(userInfo["followers_count"].toString());
-      }
-      if (userInfo.containsKey("following_count")) {
-        res.followingCount =
-            BigInt.tryParse(userInfo["following_count"].toString());
-      }
-      if (userInfo.containsKey("statuses_count")) {
-        res.postCount = BigInt.tryParse(userInfo["statuses_count"].toString());
-      }
-      return res;
-    } catch (e) {
-      return null;
-    }
-  }
-
-  static User? fromMisskey(dynamic data) {
-    try {
-      Map<String, dynamic> userInfo = data as Map<String, dynamic>;
-      User res = User(host: userInfo["host"], username: userInfo["username"]);
-      if (userInfo.containsKey("name") && userInfo["name"].length > 0) {
-        res.displayName = userInfo["name"];
-      }
-      if (userInfo.containsKey("avatarUrl")) {
-        res.avatarUrl = Uri.tryParse(userInfo["avatarUrl"]);
-        res.staticAvatarUrl = Uri.tryParse(userInfo["avatarUrl"]);
-      }
-      if (userInfo.containsKey("isAdmin")) {
-        res.isAdmin = userInfo["isAdmin"] == true;
-      }
-      if (userInfo.containsKey("isModerator")) {
-        res.isModerator = userInfo["isModerator"] == true;
-      }
-      if (userInfo.containsKey("isBot")) {
-        res.isBot = userInfo["isBot"] == true;
-      }
-      if (userInfo.containsKey("isCat")) {
-        res.isCat = userInfo["isCat"] == true;
-      }
-      if (userInfo.containsKey("onlineStatus") &&
-          EnumToString.fromString(
-                  UserOnlineStatus.values, userInfo["onlineStatus"]) !=
-              null) {
-        res.onlineStatus = EnumToString.fromString(
-            UserOnlineStatus.values, userInfo["onlineStatus"])!;
-      }
-      return res;
     } catch (e) {
       return null;
     }
